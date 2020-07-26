@@ -1,0 +1,44 @@
+{% extends "stocks_base_temp.html" %}
+{% block activeclassenv %}active{% endblock %}
+{% block activeclassinv %}active{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<section class="py-5">
+  <div class="col-lg-13 mb-5">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="h6 text-uppercase mb-0">Generate Invoice/Estimate</h3>
+      </div>
+      <div class="card-body">
+        <form method="POST" class="form-inline">
+            {% csrf_token %}
+            <table class="table table-hover table-sm card-text table-fixed css-serial">
+              <thead>
+                <tr>
+                  <th>S. No</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Sold Price</th>
+                  <th>Discount</th>
+                </tr>
+              </thead>
+              {% for form in formset %}
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td>{{ form.stock|add_class:'mr-0 form-control form-control-sm' }}</td>
+                  <td>{{ form.qty|add_class:'mr-0 form-control form-control-sm' }}</td>
+                  <td>{{ form.sold_price|add_class:'mr-0 form-control form-control-sm' }}</td>
+                  <td>{{ form.discount|add_class:'mr-0 form-control form-control-sm' }}</td>
+                </tr>
+              </tbody>
+              {% endfor %}
+            </table>
+            {{ formset.management_form }}
+            <input type="submit" class='btn btn-primary' value="Submit">
+          </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,154 @@
+/* your styles go here */
+.sidebar.shrink .sidebar-linkk {
+  display: block;
+}
+.sidebar.shrink .sidebar-linkk span {
+  display: block;
+  font-size: 0.75rem;
+}
+.sidebar.shrink .sidebar-linkk i {
+  margin: 0 !important;
+}
+.sidebar.shrink .collapse .sidebar-linkk, .sidebar.shrink .collapsing .sidebar-linkk {
+  -webkit-transition: none;
+  transition: none;
+  padding-left: 0.2rem !important;
+  padding-right: 0.2rem !important;
+}
+@media (max-width: 1199.98px) {
+  .sidebar {
+    width: 6rem;
+    text-align: center;
+    margin-left: -6rem;
+    -webkit-transition: all 0.4s;
+    transition: all 0.4s;
+  }
+  .sidebar .sidebar-linkk {
+    display: block;
+  }
+  .sidebar .sidebar-linkk span {
+    display: block;
+    font-size: 0.75rem;
+  }
+  .sidebar .sidebar-linkk i {
+    margin: 0 !important;
+  }
+}
+.sidebar-linkk {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-transition: background 0.3s;
+  transition: background 0.3s;
+  padding: 0.5rem 1.5rem;
+}
+.sidebar-link[data-toggle="collapse"] {
+  position: relative;
+}
+
+.sidebar-link[data-toggle="collapse"]::before {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  color: #aaa;
+  font-family: 'Font Awesome 5 Free';
+  content: '\f104';
+  font-weight: 900;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.sidebar-linkk[data-toggle="collapse"][aria-expanded='true']::before {
+  content: '\f107';
+}
+
+.sidebar-linkk:hover {
+  text-decoration: none;
+  background: #f5f5f5;
+}
+
+.sidebar-linkk.active, .sidebar-linkk:focus {
+  background: #379392;
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.sidebar-linkk.active::before, .sidebar-linkk:focus::before {
+  color: #fff;
+}
+
+.sidebar-linkk.active i, .sidebar-linkk:focus i {
+  color: #fff !important;
+}
+
+.sidebar-linkk i {
+  font-size: 1.5rem;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.sidebar-linkk span {
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  display: inline-block;
+}
+ /* ###################### */
+
+.css-serial {
+  counter-reset: serial-number;  /* Set the serial number counter to 0 */
+}
+
+.css-serial td:first-child:before {
+  counter-increment: serial-number;  /* Increment the serial number counter */
+  content: counter(serial-number);  /* Display the counter */
+}
+
+/* =====================
+STYLE SWITCHER FOR DEMO
+===================== */
+
+#style-switch-button1 {
+  position: fixed;
+  top: 210px;
+  right: 0px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  z-index: 2;
+}
+
+#style-switch1 {
+  width: 350px;
+  padding: 20px;
+  position: fixed;
+  top: 260px;
+  right: 0;
+  background: #fff;
+  border: solid 1px #e9ecef;
+  z-index: 2000;
+}
+
+#style-switch1 h4 {
+  color: #495057;
+}
+
+
+/* ########################### */
+.bg-grey .checkbox-template::before {
+  border: 1px solid #ddd !important;
+}
+.bg-grey .checkbox-template::after {
+  background: #fff !important;
+}
+.bg-grey {
+  background-color: #379392 !important;
+}
+
+a.bg-grey:hover, a.bg-grey:focus,
+button.bg-grey:hover,
+button.bg-grey:focus {
+  background-color: #379392 !important;
+}
