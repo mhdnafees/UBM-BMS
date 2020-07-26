@@ -1,0 +1,112 @@
+{% extends "stocks_base_temp.html" %}
+{% block activeclass1 %}active{% endblock %}
+{% block content %}
+<section class="py-5">
+  <div class="row mb-4">
+    <div class="col-xl-3 col-lg-6 mb-4 mb-xl-0">
+      <div class="bg-white shadow roundy p-4 h-100 d-flex align-items-center justify-content-between">
+        <div class="flex-grow-1 d-flex align-items-center">
+          <div class="dot mr-3 bg-grey"></div>
+          <div class="text">
+            <h6 class="mb-0">Total Profit</h6><span class="text-gray"><i class="fa fa-inr"></i> {{totalprofit.total_profit|floatformat:2}}</span>
+          </div>
+        </div>
+        <div class="icon text-white bg-grey"><i class="fas fa-inr"></i></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 mb-4 mb-xl-0">
+      <div class="bg-white shadow roundy p-4 h-100 d-flex align-items-center justify-content-between">
+        <div class="flex-grow-1 d-flex align-items-center">
+          <div class="dot mr-3 bg-grey"></div>
+          <div class="text">
+            <h6 class="mb-0">Last Month's Profit</h6><span class="text-gray"><i class="fa fa-inr"></i> {{lmonthprofit.lmonth_profit|floatformat:2}}</span>
+          </div>
+        </div>
+        <div class="icon text-white bg-grey"><i class="fas fa-inr"></i></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 mb-4 mb-xl-0">
+      <div class="bg-white shadow roundy p-4 h-100 d-flex align-items-center justify-content-between">
+        <div class="flex-grow-1 d-flex align-items-center">
+          <div class="dot mr-3 bg-grey"></div>
+          <div class="text">
+            <h6 class="mb-0">Yesterday's Profit</h6><span class="text-gray"><i class="fa fa-inr"></i> {{yesterdayprofit.yesterday_profit|floatformat:2}}</span>
+          </div>
+        </div>
+        <div class="icon text-white bg-grey"><i class="fas fa-inr"></i></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 mb-4 mb-xl-0">
+      <div class="bg-white shadow roundy p-4 h-100 d-flex align-items-center justify-content-between">
+        <div class="flex-grow-1 d-flex align-items-center">
+          <div class="dot mr-3 bg-grey"></div>
+          <div class="text">
+            <h6 class="mb-0">Total Stock Value</h6><span class="text-gray"><i class="fa fa-inr"></i> {{stockvalue.stock_value|floatformat:2}}</span>
+          </div>
+        </div>
+        <div class="icon text-white bg-grey"><i class="fas fa-info"></i></div>
+      </div>
+    </div>
+  </div>
+<!-- </section>
+<section> -->
+  <div class="row mb-4">
+    <div class="col-lg-7 mb-4 mb-lg-0">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="h6 text-uppercase mb-0">Yearly Performance</h2>
+        </div>
+        <div class="card-body">
+          <p class="text-gray">Profit comparison between last year and current year</p>
+          <div class="chart-holder">
+            <canvas id="lineChartPerformance" url-endpoint='{% url 'tstock:index' %}'></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5 mb-4 mb-lg-0 pl-lg-0">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row align-items-center flex-row">
+            <div class="col-lg-5">
+              <h3 class="mb-1 d-flex align-items-center"><span><i class="fa fa-inr"></i> {{cmonthprofit.cmonth_profit}}</span></h3><span class="text-muted text-uppercase small">current month</span>
+              <hr><small class="text-muted">Current Month's Profit compared with last month</small>
+            </div>
+            <div class="col-lg-7">
+              <canvas id="pieChartHome1"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row align-items-center flex-row">
+            <div class="col-lg-5">
+              <h3 class="mb-0 d-flex align-items-center"><span><i class="fa fa-inr"></i> {{cyearprofit.cyear_profit}}</span></h3><span class="text-muted text-uppercase small">current year</span>
+              <hr><small class="text-muted">Current year's Profit compared with target</small>
+            </div>
+            <div class="col-lg-7">
+              <canvas id="pieChartHome2"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="h6 mb-0 text-uppercase">No.of Units sold this year | Interior and Exterior Emulsion</h2>
+        </div>
+        <div class="card-body">
+          <p class="mb-5 text-gray">Comparison between interior and exterior emulsion products based on units sold</p>
+          <div class="chart-holder mt-5 mb-5">
+            <canvas id="barChartExample1"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
