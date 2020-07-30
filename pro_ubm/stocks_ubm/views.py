@@ -54,7 +54,6 @@ class CustomMixin(object):
 
 class index(CustomMixin,LoginRequiredMixin,ListView):
     login_url = '/login'
-    redirect_field_name = 'index'
 
     template_name = 'stocks_ubm/index.html'
     model = SalesRegistry
@@ -130,7 +129,7 @@ class StockOut(LoginRequiredMixin,CreateView):
             sale = get_object_or_404(SalesRegistry, pk=instance.pk)
             sale.item_profit = (instance.sold_price - stock.landing_cost) * instance.num_of_items
             sale.save()
-        return HttpResponseRedirect('/ubm-app/stockout')
+        return HttpResponseRedirect('/stockout')
 
 ####################################################################
 ##################### PURCHASE REGISTRY ############################
@@ -166,7 +165,7 @@ class StockIn(LoginRequiredMixin,CreateView):
                 stock.landing_cost = instance.updated_landing_cost
             stock.save()
             instance.save()
-        return HttpResponseRedirect('/ubm-app/stockin')
+        return HttpResponseRedirect('/stockin')
 
 class PurchaseRegister(CustomMixin,LoginRequiredMixin,ListView):
     login_url = '/login'

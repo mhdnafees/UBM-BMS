@@ -21,8 +21,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.index.as_view(),name='index'),
     path('login/', auth_views.LoginView.as_view(template_name="login.html"),name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
-    path('ubm-app/',include('stocks_ubm.urls')),
+    path('',include('stocks_ubm.urls')),
 ]
