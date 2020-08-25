@@ -8,6 +8,9 @@ $(function () {
         $('.sidebar').toggleClass('shrink show');
     });
 
+    $(document).ready(function() {
+      $('.ss').select2();
+    });
 
     $(document).ready(function() {
       $('#example1').DataTable();

@@ -153,8 +153,8 @@ $(function () {
                   yAxes: [{
                       display: true,
                       ticks: {
-                          max: 500000,
-                          min: 50000
+                          max: 110000,
+                          min: 10000
                       },
                       gridLines: {
                           color: '#fff'

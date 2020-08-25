@@ -13,6 +13,7 @@
                 <tr>
                   <th>S. No</th>
                   <th>Date of Purchase</th>
+                  <th>Bill No</th>
                   <th>Product Name</th>
                   <th>Quantity</th>
                   <th>Landing Cost</th>
@@ -23,9 +24,10 @@
                 <tr>
                   <td></td>
                   <td >{{ item.purchased_date }}</td>
-                  <td width='400px'><a href="{% url 'tstock:productdetail' pk=item.stock.pk %}" class="text-muted">{{ item.stock }}</a></td>
+                  <td >{{ item.bill_num }}</td>
+                  <td width='300px'><a href="{% url 'tstock:productdetail' pk=item.stock.pk %}" class="text-muted">{{ item.stock }}</a></td>
                   <td>{{ item.num_of_items }}</td>
-                  <td>{{ item.updated_landing_cost }}</td>
+                  <td><i class="fas fa-inr"></i> {{ item.updated_landing_cost }}</td>
                 </tr>
                 {% endfor %}
               </tbody>

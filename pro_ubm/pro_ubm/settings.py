@@ -24,9 +24,9 @@ TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
 SECRET_KEY = '_@8@-(8w4jv79m0o^)+azyb(4gr)*b)gqujfk_$iqhs&z5kpho'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -45,14 +45,6 @@ INSTALLED_APPS = [
     'dbbackup',
     'rest_framework',
 ]
-
-DBBACKUP_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-AWS_DEFAULT_ACL = None
-DBBACKUP_STORAGE_OPTIONS = {
-    "access_key": "AKIAITOV4R54FM4HA4NQ",
-    "secret_key": "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",
-    "bucket_name": "bmsubmdbbackup",
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -146,4 +138,4 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = '/ubm-app/'
 LOGOUT_REDIRECT_URL = '/'
 
-STATIC_ROOT = '/var/www/static/'
+# STATIC_ROOT = '/www/static/'

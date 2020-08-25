@@ -17,6 +17,7 @@ from rest_framework.response import Response
 
 from decimal import Decimal
 
+
 # Create your views here.
 
 
@@ -26,7 +27,6 @@ class CustomMixin(object):
         todaydate = localdate()
         yesterday = todaydate - timedelta(1)
         l_month = todaydate - timedelta(30)
-        # Call class's get_context_data method to retrieve context
         context = super(CustomMixin, self).get_context_data(**kwargs)
         #  Stock Page #
         context['stock_list'] = Stock.objects.all().order_by('product_name')
@@ -43,30 +43,42 @@ class CustomMixin(object):
         context['sales_list'] = SalesRegistry.objects.all().order_by('-sold_date')
         #  Purchase Register Page #
         context['purchase_list'] = PurchaseRegistry.objects.all().order_by('-purchased_date')
+        #  Profit Gen Page #
         context['profitgenlist'] = progeneration.objects.all().order_by('stock')
         context['profitgenprofit'] = progeneration.objects.all().aggregate(total=Sum('profit'))
         context['profitgendiscount'] = progeneration.objects.all().aggregate(total=Sum('discount'))
         context['profitgenqty'] = progeneration.objects.all().aggregate(total=Sum('qty'))
         context['profitgentotal'] =  progeneration.objects.all().aggregate(total=Sum(F('sold_price')*F('qty'),output_field=DecimalField()))
-        context['invoicegenlist'] = invoicegeneration.objects.all().order_by('stock')
+        #  Invoice Gen Page #
+        context['invoicegenlist'] = invoicegeneration.objects.all().order_by('id')
         context['invoicegengrandtotal'] = invoicegeneration.objects.all().aggregate(total=Sum('price'))
+        #  Todays stats Page #
+        context['salestoday_list'] = SalesRegistry.objects.all().filter(sold_date__exact=todaydate).order_by('-sold_date')
+        context['purchasetoday_list'] = PurchaseRegistry.objects.all().filter(purchased_date__exact=todaydate).order_by('-purchased_date')
+        context['salestoday_totalsales'] = SalesRegistry.objects.all().filter(sold_date__exact=todaydate).aggregate(totalsales=Sum(F('sold_price')*F('num_of_items'),output_field=DecimalField()),profit=Sum('item_profit'),totalunits=Sum('num_of_items'))
+        context['salesmosttoday_list'] = SalesRegistry.objects.all().filter(sold_date__exact=todaydate).order_by('-num_of_items')[:5]
         return context
 
-class index(CustomMixin,LoginRequiredMixin,ListView):
-    login_url = '/login'
+class index(CustomMixin,ListView):
 
     template_name = 'stocks_ubm/index.html'
     model = SalesRegistry
 
-class TotalStocksAndAddProduct(CustomMixin,LoginRequiredMixin,CreateView):
-    login_url = '/login'
+class TodayStats(CustomMixin,ListView):
+
+
+    template_name = 'stocks_ubm/todaystats.html'
+    model = SalesRegistry
+
+class TotalStocksAndAddProduct(CustomMixin,CreateView):
+
 
     form_class = AddProductForm
     model = Stock
     template_name = 'stocks_ubm/stockandadd.html'
 
-class ProductDetail(LoginRequiredMixin,DetailView):
-    login_url = '/login'
+class ProductDetail(DetailView):
+
 
     model = Stock
 
@@ -75,18 +87,19 @@ class ProductDetail(LoginRequiredMixin,DetailView):
         stock = self.objects
         context = super().get_context_data(**kwargs)
         context['sales_list'] =SalesRegistry.objects.all().filter(stock_name__product_name__exact = stock.product_name).order_by('-sold_date')
+        context['total_units'] =SalesRegistry.objects.all().filter(stock_name__product_name__exact = stock.product_name).aggregate(totalunits=Sum('num_of_items'))
         context['purchase_list'] =PurchaseRegistry.objects.all().filter(stock__product_name__exact = stock.product_name).order_by('-purchased_date')
         return context
 
-class UpdateProduct(LoginRequiredMixin,UpdateView):
-    login_url = '/login'
+class UpdateProduct(UpdateView):
+
 
     model = Stock
     form_class = UpdateProductForm
     template_name = 'stocks_ubm/update_product.html'
 
-class UpdateProductHTML(LoginRequiredMixin,ListView):
-    login_url = '/login'
+class UpdateProductHTML(ListView):
+
 
     model = Stock
     template_name = 'stocks_ubm/update_producthtml.html'
@@ -95,14 +108,14 @@ class UpdateProductHTML(LoginRequiredMixin,ListView):
 ##################### SALES REGISTRY ###############################
 ####################################################################
 
-class SalesRegister(CustomMixin,LoginRequiredMixin,ListView):
-    login_url = '/login'
+class SalesRegister(CustomMixin,ListView):
+
 
     model = SalesRegistry
     template_name = 'stocks_ubm/salesregister_list.html'
 
-class StockOut(LoginRequiredMixin,CreateView):
-    login_url = '/login'
+class StockOut(CreateView):
+
 
     model = SalesRegistry
     form_class = StockOutForm
@@ -124,10 +137,14 @@ class StockOut(LoginRequiredMixin,CreateView):
             stock = get_object_or_404(Stock, pk=instance.stock_name.pk)
             sqty = instance.num_of_items
             stock.stock_available -= sqty
+            instance.slanding_cost = stock.landing_cost
             stock.save()
             instance.save()
             sale = get_object_or_404(SalesRegistry, pk=instance.pk)
-            sale.item_profit = (instance.sold_price - stock.landing_cost) * instance.num_of_items
+            if instance.num_of_items < 0:
+                sale.item_profit = -(stock.landing_cost - instance.sold_price) * instance.num_of_items
+            else:
+                sale.item_profit = (instance.sold_price - stock.landing_cost) * instance.num_of_items
             sale.save()
         return HttpResponseRedirect('/stockout')
 
@@ -135,8 +152,8 @@ class StockOut(LoginRequiredMixin,CreateView):
 ##################### PURCHASE REGISTRY ############################
 ####################################################################
 
-class StockIn(LoginRequiredMixin,CreateView):
-    login_url = '/login'
+class StockIn(CreateView):
+
 
     model = PurchaseRegistry
     form_class = StockInForm
@@ -158,59 +175,23 @@ class StockIn(LoginRequiredMixin,CreateView):
             stock = get_object_or_404(Stock, pk=instance.stock.pk)
             sqty = instance.num_of_items
             stock.stock_available += sqty
-            if instance.updated_landing_cost == 0:
-                stock.landing_cost = stock.landing_cost
-                instance.updated_landing_cost = stock.landing_cost
-            else:
-                stock.landing_cost = instance.updated_landing_cost
+            tempdis = instance.unit_price*Decimal(instance.discount/100)
+            tempvatdis = instance.unit_price - tempdis
+            instance.updated_landing_cost = tempvatdis + (tempvatdis * Decimal(instance.vat/100))
+            stock.landing_cost = instance.updated_landing_cost
             stock.save()
             instance.save()
         return HttpResponseRedirect('/stockin')
 
-class PurchaseRegister(CustomMixin,LoginRequiredMixin,ListView):
-    login_url = '/login'
+class PurchaseRegister(CustomMixin,ListView):
+
 
     model = PurchaseRegistry
     template_name = 'stocks_ubm/purchaseregister_list.html'
 
-
-###################################################################
-######################### EXCEL EXPORT ############################
-###################################################################
-#
-# def export_daily_xls(request):
-#     today = datetime.now().date()
-#     tomorrow = today + timedelta(1)
-#     today_start = datetime.combine(today, time())
-#     today_end = datetime.combine(tomorrow, time())
-#     response = HttpResponse(content_type='application/ms-excel')
-#     response['Content-Disposition'] = 'attachment; filename="dailysales {}.xls"'.format(str(today))
-#     wb = xlwt.Workbook(encoding='utf-8')
-#     ws = wb.add_sheet('Daily Sales')
-#     # Sheet header, first row
-#     row_num = 0
-#     font_style = xlwt.XFStyle()
-#     font_style.font.bold = True
-#     columns = ['Date','Product Name','Quantity','Sold Price']
-#     for col_num in range(len(columns)):
-#         ws.write(row_num, col_num, columns[col_num], font_style)
-#     # Sheet body, remaining rows
-#     font_style = xlwt.XFStyle()
-#     today = datetime.now().date()
-#     tomorrow = today + timedelta(1)
-#     today_start = datetime.combine(today, time())
-#     today_end = datetime.combine(tomorrow, time())
-#     rows = [(str(my_record.sold_date), str(my_record.stock_name),str(my_record.num_of_items),str(my_record.sold_price),) for my_record in SalesRegistry.objects.all().filter(sold_date__lte=today_end, sold_date__gte=today_start).order_by('sold_date')]
-#     for row in rows:
-#         row_num += 1
-#         for col_num in range(len(row)):
-#             ws.write(row_num, col_num, row[col_num], font_style)
-#     wb.save(response)
-#     return response
-
  # API CHART DATA
-class ChartData(LoginRequiredMixin, APIView):
-    login_url = '/login'
+class ChartData(APIView):
+
 
     authentication_classes = []
     permission_classes = []
@@ -282,7 +263,7 @@ class ChartData(LoginRequiredMixin, APIView):
         curyear = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year).aggregate(cyear_profit=Sum(('item_profit'), output_field=IntegerField()))
 
         curyear_profit = curyear['cyear_profit']
-        yearyettoachieve = 10000000 - curyear['cyear_profit']
+        yearyettoachieve = 1000000 - curyear['cyear_profit']
 
         if yearyettoachieve < 0:
             yearyettoachieve = 0
@@ -294,16 +275,16 @@ class ChartData(LoginRequiredMixin, APIView):
         else:
             yettoachieve = yettoachieve
 
-        ysoldbison = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="bison").aggregate(bison_ysold=Sum(('num_of_items'), output_field=IntegerField()))
-        ysoldrangoli = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="rangoli").aggregate(rangoli_ysold=Sum(('num_of_items'), output_field=IntegerField()))
-        ysoldeclean = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="easy").aggregate(eclean_ysold=Sum(('num_of_items'), output_field=IntegerField()))
-        ysoldsilk = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="silk").aggregate(silk_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldbison = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="bison").exclude(stock_name__product_name__icontains="putty").aggregate(bison_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldrangoli = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="rangoli").aggregate(rangoli_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldeclean = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="easy").aggregate(eclean_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldsilk = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="silk").aggregate(silk_ysold=Sum(('num_of_items'), output_field=IntegerField()))
 
-        ysoldwalmasta = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="walmasta").aggregate(walmasta_ysold=Sum(('num_of_items'), output_field=IntegerField()))
-        ysoldsmooth = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="smooth").aggregate(smooth_ysold=Sum(('num_of_items'), output_field=IntegerField()))
-        ysoldantidust = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="antidust").aggregate(antidust_ysold=Sum(('num_of_items'), output_field=IntegerField()))
-        ysoldallguard = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="allguard").aggregate(allguard_ysold=Sum(('num_of_items'), output_field=IntegerField()))
-        ysoldlonglife = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__contains="longlife").aggregate(longlife_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldwalmasta = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="walmasta").aggregate(walmasta_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldsmooth = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="smooth").aggregate(smooth_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldantidust = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="antidust").aggregate(antidust_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldallguard = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="allguard").aggregate(allguard_ysold=Sum(('num_of_items'), output_field=IntegerField()))
+        ysoldlonglife = SalesRegistry.objects.filter(sold_date__year__exact=todaydate.year, stock_name__product_name__icontains="longlife").aggregate(longlife_ysold=Sum(('num_of_items'), output_field=IntegerField()))
 
         ysoldbison_sum = ysoldbison['bison_ysold']
         ysoldrangoli_sum = ysoldrangoli['rangoli_ysold']
@@ -346,8 +327,8 @@ class ChartData(LoginRequiredMixin, APIView):
 ###################################################################
 ######################### Profit Gen ############################
 ###################################################################
-class ProfitGen(LoginRequiredMixin,CreateView):
-    login_url = '/login'
+class ProfitGen(CreateView):
+
 
     model = ProfitGen
     form_class = ProfitGenForm
@@ -375,8 +356,7 @@ class ProfitGen(LoginRequiredMixin,CreateView):
             sale.save()
         return HttpResponseRedirect('profitgenlist')
 
-class ProfitGenList(CustomMixin,LoginRequiredMixin,ListView):
-    login_url = '/login'
+class ProfitGenList(CustomMixin,ListView):
 
     model = progeneration
     template_name = 'stocks_ubm/profitgenlist.html'
@@ -385,8 +365,8 @@ class ProfitGenList(CustomMixin,LoginRequiredMixin,ListView):
 ######################### Invoice Gen ############################
 ###################################################################
 
-class InvoiceGen(LoginRequiredMixin,CreateView):
-    login_url = '/login'
+class InvoiceGen(CreateView):
+
 
     model = invoicegeneration
     form_class = InvoiceGenForm
@@ -414,13 +394,7 @@ class InvoiceGen(LoginRequiredMixin,CreateView):
             sale.save()
         return HttpResponseRedirect('invoicegenlist')
 
-class InvoiceGenList(CustomMixin,LoginRequiredMixin,ListView):
-    login_url = '/login'
+class InvoiceGenList(CustomMixin,ListView):
 
     model = invoicegeneration
     template_name = 'stocks_ubm/invoicegenlist.html'
-
-
-###################################################################
-######################### Estime Gen ############################
-###################################################################

@@ -25,8 +25,8 @@
                   <td></td>
                   <td><a href="{% url 'tstock:productdetail' pk=item.pk %}" class="text-muted">{{ item.product_name }}</a></td>
                   <td>{{ item.stock_available }}</td>
-                  <td>{{ item.landing_cost }}</td>
-                  <td>{{ item.profit_price|floatformat:2 }}</td>
+                  <td><i class="fas fa-inr"></i> {{ item.landing_cost }}</td>
+                  <td><i class="fas fa-inr"></i> {{ item.profit_price|floatformat:2 }}</td>
                 </tr>
                 {% endfor %}
               </tbody>

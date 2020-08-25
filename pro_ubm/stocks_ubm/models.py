@@ -14,9 +14,6 @@ class Stock(models.Model):
     def profit_price(self):
         return self.landing_cost * Decimal(1.15)
 
-    def units_sold(self):
-        return self.sstock.filter()
-
     def get_absolute_url(self):
         return reverse("tstock:productdetail",kwargs={'pk':self.pk})
 
@@ -29,6 +26,7 @@ class SalesRegistry(models.Model):
     sold_price = models.DecimalField(decimal_places=2,max_digits=55)
     sold_date = models.DateField(default=localdate)
     item_profit = models.DecimalField(decimal_places=2,max_digits=55,default=0)
+    slanding_cost = models.DecimalField(decimal_places=2,max_digits=55,default=0)
 
     def __str__(self):
         return self.stock_name.product_name
@@ -41,6 +39,11 @@ class PurchaseRegistry(models.Model):
     num_of_items = models.IntegerField()
     purchased_date = models.DateField(default=localdate)
     updated_landing_cost = models.DecimalField(decimal_places=2,max_digits=55,default=0)
+    bill_num = models.CharField(max_length=100)
+    vat = models.IntegerField(default=18)
+    unit_price = models.DecimalField(decimal_places=2,max_digits=55,null=True)
+    discount = models.IntegerField(default=5)
+
 
     def __str__(self):
         return self.stock.product_name

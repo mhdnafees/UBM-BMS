@@ -1,4 +1,21 @@
 /* your styles go here */
+
+.stockin90{
+  width: 90px !important;
+}
+
+.stockin240{
+  width: 240px !important;
+}
+
+.stockin70{
+  width: 70px !important;
+}
+
+.stockin160{
+  width: 160px !important;
+}
+
 .sidebar.shrink .sidebar-linkk {
   display: block;
 }
