@@ -46,14 +46,6 @@ INSTALLED_APPS = [
     'rest_framework',
 ]
 
-DBBACKUP_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-AWS_DEFAULT_ACL = None
-DBBACKUP_STORAGE_OPTIONS = {
-    "access_key": "AKIAITOV4R54FM4HA4NQ",
-    "secret_key": "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",
-    "bucket_name": "bmsubmdbbackup",
-}
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
