@@ -1,10 +1,12 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 app_name = 'tstock'
 
 urlpatterns = [
     path('',views.index.as_view(),name='index'),
+
+    path('todaystats',views.TodayStats.as_view(),name='todaystats'),
 
     path('totalstocksandaddproduct/',views.TotalStocksAndAddProduct.as_view(),name='totalstocksandaddproduct'),
     path('productdetail/<int:pk>/',views.ProductDetail.as_view(),name='productdetail'),
@@ -17,12 +19,11 @@ urlpatterns = [
     path('stockin/',views.StockIn.as_view(),name='stockin'),
     path('purchaseregister/',views.PurchaseRegister.as_view(),name='purchaseregister'),
 
-    # path('xls/', views.export_daily_xls, name='export_daily_xls'),
-
     path('api/chart/data',views.ChartData.as_view(),name="api-chart-data"),
 
     path('profitgen',views.ProfitGen.as_view(),name='profitgen'),
     path('profitgenlist',views.ProfitGenList.as_view(),name='profitgenlist'),
     path('invoicegen',views.InvoiceGen.as_view(),name='invoicegen'),
     path('invoicegenlist',views.InvoiceGenList.as_view(),name='invoicegenlist'),
+
 ]

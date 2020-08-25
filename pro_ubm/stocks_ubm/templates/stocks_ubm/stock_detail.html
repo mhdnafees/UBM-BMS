@@ -55,7 +55,7 @@
               </div>
             </div>
             <div class="right ml-5 ml-sm-0 pl-3 pl-sm-0">
-              <h7>{{ stock.units_sold.count }}</h7>
+              <h7>{{ total_units.totalunits }}</h7>
             </div>
           </div>
 
@@ -118,7 +118,7 @@
                 <td>{{ item.sold_date }}</td>
                 <td>{{ item.stock_name }}</td>
                 <td>{{ item.num_of_items }}</td>
-                <td>{{ item.stock_name.landing_cost }}</td>
+                <td>{% if item.slanding_cost == 0 %} {{ item.stock_name.landing_cost|floatformat:2 }} {% else %}  {{ item.slanding_cost|floatformat:2 }} {% endif %}</td>
                 <td>{{ item.sold_price|floatformat:2 }}</td>
                 <td>{{ item.item_profit }}</td>
               </tr>

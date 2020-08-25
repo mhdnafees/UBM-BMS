@@ -5,8 +5,7 @@
   <div class="col-lg-13 mb-5">
     <div class="card">
       <div class="card-header">
-        <h3 class="h6 text-uppercase mb-2">Stock-In</h3>
-        <h8 class=" text-muted mb-0">*Leave the "New Landing Cost" as 0 if you don't want to change the Landing cost*</h8>
+        <h3 class="h6 text-uppercase mb-2">Purchases</h3>
       </div>
       <div class="card-body">
         <form method="POST" class="form-inline">
@@ -15,18 +14,25 @@
               <thead>
                 <tr>
                   <th>Date of Purchase</th>
+                  <th>Bill No</th>
                   <th>Product Name</th>
                   <th>Quantity</th>
-                  <th>New Landing Cost</th>
+                  <th>Unit Price</th>
+                  <th>Vat(%)</th>
+                  <th>Discount(%)</th>
                 </tr>
               </thead>
               {% for form in formset %}
               <tbody>
                 <tr>
-                  <td>{{ form.purchased_date|add_class:'mr-0 form-control form-control-sm' }}</td>
-                  <td>{{ form.stock|add_class:'mr-0 form-control form-control-sm' }}</td>
-                  <td>{{ form.num_of_items|add_class:'mr-0 form-control form-control-sm' }}</td>
-                  <td>{{ form.updated_landing_cost|add_class:'mr-0 form-control form-control-sm' }}</td>
+                  <td>{{ form.purchased_date|add_class:'mr-0 form-control form-control-sm stockin160' }}</td>
+                  <td>{{ form.bill_num|add_class:'mr-0 form-control form-control-sm stockin90' }}</td>
+                  <td>{{ form.stock|add_class:'mr-0 form-control form-control-sm ss stockin240' }}</td>
+                  <td>{{ form.num_of_items|add_class:'mr-0 form-control form-control-sm stockin70' }}</td>
+                  <td>{{ form.unit_price|add_class:'mr-0 form-control form-control-sm stockin90' }}</td>
+                  <td>{{ form.vat|add_class:'mr-0 form-control form-control-sm stockin70' }}</td>
+                  <td>{{ form.discount|add_class:'mr-0 form-control form-control-sm stockin70' }}</td>
+
                 </tr>
               </tbody>
               {% endfor %}

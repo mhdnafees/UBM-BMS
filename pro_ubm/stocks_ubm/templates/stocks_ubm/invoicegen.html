@@ -12,7 +12,7 @@
       <div class="card-body">
         <form method="POST" class="form-inline">
             {% csrf_token %}
-            <table class="table table-hover table-sm card-text table-fixed css-serial">
+            <table class="table table-hover card-text table-fixed css-serial">
               <thead>
                 <tr>
                   <th>S. No</th>
@@ -26,7 +26,7 @@
               <tbody>
                 <tr>
                   <td></td>
-                  <td>{{ form.stock|add_class:'mr-0 form-control form-control-sm' }}</td>
+                  <td>{{ form.stock|add_class:'mr-0 form-control form-control-sm ss' }}</td>
                   <td>{{ form.qty|add_class:'mr-0 form-control form-control-sm' }}</td>
                   <td>{{ form.sold_price|add_class:'mr-0 form-control form-control-sm' }}</td>
                   <td>{{ form.discount|add_class:'mr-0 form-control form-control-sm' }}</td>

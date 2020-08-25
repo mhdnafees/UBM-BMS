@@ -42,28 +42,28 @@ class StockOutForm(forms.ModelForm):
         self.fields["num_of_items"].label = "num_of_items"
         self.fields["sold_price"].label = "sold_price"
 
-StockOutFormset = modelformset_factory(SalesRegistry, form=StockOutForm, fields=('stock_name','num_of_items','sold_price','sold_date'), extra=10)
+StockOutFormset = modelformset_factory(SalesRegistry, form=StockOutForm, fields=('stock_name','num_of_items','sold_price','sold_date'), extra=20)
 
 class StockInForm(forms.ModelForm):
     class Meta():
         model = PurchaseRegistry
-        fields = ('purchased_date','stock','num_of_items','updated_landing_cost')
+        fields = ('purchased_date','bill_num','stock','num_of_items','vat','unit_price','discount')
         widgets = {
             'purchased_date': DateInput(),
         }
 
-StockInFormset = modelformset_factory(PurchaseRegistry, form=StockInForm, fields=('stock','num_of_items','updated_landing_cost','purchased_date'), extra=10)
+StockInFormset = modelformset_factory(PurchaseRegistry, form=StockInForm, fields=('stock','num_of_items','unit_price','purchased_date','bill_num','vat','discount'), extra=10)
 
 class ProfitGenForm(forms.ModelForm):
     class Meta():
         model = ProfitGen
         fields = ('stock','qty','sold_price','discount')
 
-ProfitGenFormset = modelformset_factory(ProfitGen, form=ProfitGenForm, fields=('stock','qty','sold_price','discount'), extra=15)
+ProfitGenFormset = modelformset_factory(ProfitGen, form=ProfitGenForm, fields=('stock','qty','sold_price','discount'), extra=100)
 
 class InvoiceGenForm(forms.ModelForm):
     class Meta():
         model = InvoiceGen
         fields = ('stock','qty','sold_price','discount')
 
-InvoiceGenFormset = modelformset_factory(InvoiceGen, form=InvoiceGenForm, fields=('stock','qty','sold_price','discount'), extra=15)
+InvoiceGenFormset = modelformset_factory(InvoiceGen, form=InvoiceGenForm, fields=('stock','qty','sold_price','discount'), extra=100)

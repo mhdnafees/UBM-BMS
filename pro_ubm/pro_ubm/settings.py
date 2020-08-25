@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'bootstrap4',
     'stocks_ubm',
     'widget_tweaks',
-    'rest_framework'
+    'dbbackup',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -130,9 +131,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'static'),
-    os.path.join(BASE_DIR, 'stylesheets'),
+
 
 ]
 
 LOGIN_REDIRECT_URL = '/ubm-app/'
 LOGOUT_REDIRECT_URL = '/'
+
+# STATIC_ROOT = '/www/static/'

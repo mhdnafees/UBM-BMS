@@ -13,7 +13,7 @@
               <thead>
                 <tr>
                   <th>S. No</th>
-                  <th >Date of Sale</th>
+                  <th>Date of Sale</th>
                   <th>Product Name</th>
                   <th>Quantity</th>
                   <th>Landing Cost</th>
@@ -28,9 +28,9 @@
                   <td width='110px'>{{ item.sold_date }}</td>
                   <td><a href="{% url 'tstock:productdetail' pk=item.stock_name.pk %}" class="text-muted">{{ item.stock_name }}</a></td>
                   <td>{{ item.num_of_items }}</td>
-                  <td>{{ item.stock_name.landing_cost }}</td>
-                  <td>{{ item.sold_price|floatformat:2 }}</td>
-                  <td>{{ item.item_profit }}</td>
+                  <td><i class="fas fa-inr"></i> {% if item.slanding_cost == 0 %} {{ item.stock_name.landing_cost }} {% else %}  {{ item.slanding_cost }} {% endif %}</td>
+                  <td><i class="fas fa-inr"></i> {{ item.sold_price|floatformat:2 }}</td>
+                  <td><i class="fas fa-inr"></i> {{ item.item_profit }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
